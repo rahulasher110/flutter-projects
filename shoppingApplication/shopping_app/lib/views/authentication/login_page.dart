@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                                     color: AppColors.primaryColor),
                               ))),
                       SizedBox(
-                        height: AppDimensions.height30,
+                        height: AppDimensions.height45,
                       ),
                       SizedBox(
                         width: Get.width * 0.5,
@@ -111,10 +111,11 @@ class _LoginPageState extends State<LoginPage> {
                                   vertical: 16),
                             ),
                             onPressed: () {},
-                            child: const Text(
+                            child: Text(
                               'Login',
                               style: TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.w500),
+                                  fontSize: AppDimensions.font16,
+                                  fontWeight: FontWeight.w500),
                             )),
                       )
                     ],
