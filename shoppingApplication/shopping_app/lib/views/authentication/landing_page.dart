@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
-import 'package:shopping_app/utils/images.dart';
+import 'package:shopping_app/utils/assets.dart';
 import 'package:shopping_app/views/authentication/login_page.dart';
 
 class LandingPage extends StatefulWidget {
