@@ -20,66 +20,72 @@ class CartWidget extends StatelessWidget {
       margin: const EdgeInsets.symmetric(
           horizontal: AppDimensions.horizontalPadding, vertical: 6),
       height: AppDimensions.height150,
-      child: Row(
-        children: [
-          Image.network(
-            productDetail.image.toString(),
-            fit: BoxFit.cover,
-          ),
-          SizedBox(
-            width: AppDimensions.width30,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  productDetail.title.toString(),
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.blueColorAsset),
-                ),
-                SizedBox(
-                  height: AppDimensions.height10,
-                ),
-                Text(
-                  '₹ ${productDetail.price.toString()}',
-                  style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 29, 60, 84)),
-                ),
-                SizedBox(
-                  height: AppDimensions.height15,
-                ),
-                Container(
-                  child: Row(
-                    children: [
-                      AppIconWidget(
-                        icon: Icons.add,
-                        size: AppDimensions.iconSize24,
-                      ),
-                      SizedBox(
-                        width: AppDimensions.width10,
-                      ),
-                      Text('1'),
-                      SizedBox(
-                        width: AppDimensions.width10,
-                      ),
-                      AppIconWidget(
-                        icon: Icons.remove,
-                        backgroundColor: AppColors.greyShadow,
-                        iconColor: AppColors.blueColorAsset,
-                        size: AppDimensions.iconSize24,
-                      ),
-                    ],
-                  ),
-                )
-              ],
+      child: Expanded(
+        child: Row(
+          children: [
+            Image.network(
+              productDetail.image.toString(),
+              fit: BoxFit.cover,
             ),
-          )
-        ],
+            SizedBox(
+              width: AppDimensions.width30,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    productDetail.title!.substring(
+                        0,
+                        productDetail.title!.length < 30
+                            ? productDetail.title!.length
+                            : 30),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.blueColorAsset),
+                  ),
+                  SizedBox(
+                    height: AppDimensions.height10,
+                  ),
+                  Text(
+                    '₹ ${productDetail.price.toString()}',
+                    style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 29, 60, 84)),
+                  ),
+                  SizedBox(
+                    height: AppDimensions.height15,
+                  ),
+                  SizedBox(
+                    child: Row(
+                      children: [
+                        AppIconWidget(
+                          icon: Icons.add,
+                          size: AppDimensions.iconSize24,
+                        ),
+                        SizedBox(
+                          width: AppDimensions.width10,
+                        ),
+                        Text('1'),
+                        SizedBox(
+                          width: AppDimensions.width10,
+                        ),
+                        AppIconWidget(
+                          icon: Icons.remove,
+                          backgroundColor: AppColors.greyShadow,
+                          iconColor: AppColors.blueColorAsset,
+                          size: AppDimensions.iconSize24,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

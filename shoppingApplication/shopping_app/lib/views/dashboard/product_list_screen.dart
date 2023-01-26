@@ -23,7 +23,12 @@ class ListOfProducts extends StatefulWidget {
 }
 
 class _ListOfProductsState extends State<ListOfProducts> {
+  final scrollController = ScrollController();
   bool isLoading = false;
+  bool isLoadingVertical = false;
+  final int increment = 10;
+  String? selectCategory;
+
   List<dynamic> listOfProducts = [];
   List<Products> listOfItemsAddToCart = [];
   List<String> listOfCategory = [
@@ -113,11 +118,37 @@ class _ListOfProductsState extends State<ListOfProducts> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Our Products',
-                  style: TextStyle(
-                      fontSize: AppDimensions.font32,
-                      fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Our Products',
+                      style: TextStyle(
+                          fontSize: AppDimensions.font32,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    GestureDetector(
+                      onTap: () {},
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Filters',
+                            style: TextStyle(color: AppColors.greyTextColor),
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          AppIconWidget(
+                            icon: Icons.format_list_bulleted_sharp,
+                            size: AppDimensions.iconsSize16,
+                            iconColor: Colors.grey,
+                            backgroundColor:
+                                const Color.fromARGB(255, 242, 242, 242),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
                 SizedBox(
                   height: AppDimensions.height20,
@@ -127,25 +158,33 @@ class _ListOfProductsState extends State<ListOfProducts> {
                   child: ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
                     itemCount: listOfCategory.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: AppColors.whiteColor,
-                            borderRadius:
-                                BorderRadius.circular(AppDimensions.radius12)),
-                        child: Center(
-                            child: Padding(
-                          padding: AppDimensions.pagePadding,
-                          child: Text(
-                            listOfCategory[index],
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        )),
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectCategory = listOfCategory[index];
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(
+                                  AppDimensions.radius12)),
+                          child: Center(
+                              child: Padding(
+                            padding: AppDimensions.pagePadding,
+                            child: Text(
+                              listOfCategory[index],
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          )),
+                        ),
                       );
                     },
                   ),
@@ -158,6 +197,7 @@ class _ListOfProductsState extends State<ListOfProducts> {
                     : LazyLoadScrollView(
                         onEndOfPage: () {},
                         child: GridView.builder(
+                          controller: scrollController,
                           shrinkWrap: true,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
@@ -177,6 +217,8 @@ class _ListOfProductsState extends State<ListOfProducts> {
                                 price: listOfProducts[index].price,
                                 image: listOfProducts[index].image,
                                 rating: listOfProducts[index].rating.rate,
+                                category: listOfProducts[index].category,
+                                selectedCategory: selectCategory ?? '',
                                 isLiked: (v) {
                                   setState(() {
                                     if (v) {
@@ -187,6 +229,7 @@ class _ListOfProductsState extends State<ListOfProducts> {
                                           (element) =>
                                               element.id ==
                                               listOfProducts[index].id);
+                                      ;
                                     }
                                   });
                                 },

@@ -10,13 +10,28 @@ import 'package:shopping_app/widgets/cart_widget.dart';
 
 class CartList extends StatefulWidget {
   final List<Products> listOfItemsAddedToCart;
-  const CartList({super.key, required this.listOfItemsAddedToCart});
+  const CartList({
+    super.key,
+    required this.listOfItemsAddedToCart,
+  });
 
   @override
   State<CartList> createState() => _CartListState();
 }
 
 class _CartListState extends State<CartList> {
+  double totalPrice = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    for (var item in widget.listOfItemsAddedToCart) {
+      totalPrice += item.price ?? 0;
+    }
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +45,7 @@ class _CartListState extends State<CartList> {
                 pinned: true,
                 floating: true,
                 expandedHeight: AppDimensions.height100,
-                backgroundColor: Colors.greenAccent[400],
+                backgroundColor: Colors.blue,
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back_ios),
                   onPressed: () => Get.back(),
@@ -93,7 +108,7 @@ class _CartListState extends State<CartList> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '₹ ',
+                          '₹ ${totalPrice.toString()}',
                           style: TextStyle(
                               fontSize: AppDimensions.font28,
                               fontWeight: FontWeight.bold,
