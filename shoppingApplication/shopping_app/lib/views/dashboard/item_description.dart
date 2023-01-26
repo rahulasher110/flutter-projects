@@ -35,8 +35,11 @@ class ProductDescription extends StatelessWidget {
               right: AppDimensions.width20,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  AppIconWidget(icon: Icons.arrow_back_ios),
+                children: [
+                  AppIconWidget(
+                    onClick: () => Get.back(),
+                    icon: Icons.arrow_back_ios,
+                  ),
                   AppIconWidget(icon: Icons.shopping_cart_outlined)
                 ],
               )),
@@ -128,8 +131,7 @@ class ProductDescription extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const AppIconWidget(
-                              icon: Icons.shopping_cart_outlined),
+                          AppIconWidget(icon: Icons.shopping_cart_outlined),
                           SizedBox(
                             width: AppDimensions.width10,
                           ),

@@ -6,9 +6,23 @@ import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
 import 'package:shopping_app/widgets/app_icon.dart';
 
-class CartWidget extends StatelessWidget {
+class CartWidget extends StatefulWidget {
   Products productDetail;
-  CartWidget({super.key, required this.productDetail});
+  final Function(int val) totalItemAddToCart;
+  final Function(int val) totalItemRemoveToCart;
+
+  CartWidget(
+      {super.key,
+      required this.productDetail,
+      required this.totalItemAddToCart,
+      required this.totalItemRemoveToCart});
+
+  @override
+  State<CartWidget> createState() => _CartWidgetState();
+}
+
+class _CartWidgetState extends State<CartWidget> {
+  int count = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +38,7 @@ class CartWidget extends StatelessWidget {
         child: Row(
           children: [
             Image.network(
-              productDetail.image.toString(),
+              widget.productDetail.image.toString(),
               fit: BoxFit.cover,
             ),
             SizedBox(
@@ -35,10 +49,10 @@ class CartWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    productDetail.title!.substring(
+                    widget.productDetail.title!.substring(
                         0,
-                        productDetail.title!.length < 30
-                            ? productDetail.title!.length
+                        widget.productDetail.title!.length < 30
+                            ? widget.productDetail.title!.length
                             : 30),
                     style: const TextStyle(
                         fontSize: 16,
@@ -49,7 +63,7 @@ class CartWidget extends StatelessWidget {
                     height: AppDimensions.height10,
                   ),
                   Text(
-                    '₹ ${productDetail.price.toString()}',
+                    '₹ ${widget.productDetail.price.toString()}',
                     style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -64,15 +78,32 @@ class CartWidget extends StatelessWidget {
                         AppIconWidget(
                           icon: Icons.add,
                           size: AppDimensions.iconSize24,
+                          onClick: () {
+                            setState(() {
+                              count++;
+                            });
+                            widget.totalItemAddToCart(count);
+                          },
                         ),
                         SizedBox(
                           width: AppDimensions.width10,
                         ),
-                        Text('1'),
+                        Text('${count < 1 ? 1 : count}'),
                         SizedBox(
                           width: AppDimensions.width10,
                         ),
                         AppIconWidget(
+                          onClick: () {
+                            setState(() {
+                              if (count > 1) {
+                                count--;
+                              }
+                            });
+                            count > 1
+                                ? widget.totalItemRemoveToCart(count)
+                                : widget.totalItemRemoveToCart(1);
+                            ;
+                          },
                           icon: Icons.remove,
                           backgroundColor: AppColors.greyShadow,
                           iconColor: AppColors.blueColorAsset,

@@ -5,6 +5,7 @@ import 'package:shopping_app/models/products.dart';
 import 'package:shopping_app/utils/assets.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
+import 'package:shopping_app/views/dashboard/payment_screen.dart';
 import 'package:shopping_app/widgets/app_icon.dart';
 import 'package:shopping_app/widgets/cart_widget.dart';
 
@@ -23,12 +24,9 @@ class _CartListState extends State<CartList> {
   double totalPrice = 0;
   @override
   void initState() {
-    // TODO: implement initState
-
     for (var item in widget.listOfItemsAddedToCart) {
       totalPrice += item.price ?? 0;
     }
-
     super.initState();
   }
 
@@ -86,13 +84,25 @@ class _CartListState extends State<CartList> {
                           itemBuilder: (context, index) {
                             return CartWidget(
                                 productDetail:
-                                    widget.listOfItemsAddedToCart[index]);
+                                    widget.listOfItemsAddedToCart[index],
+                                totalItemAddToCart: (v) {
+                                  setState(() {
+                                    totalPrice += totalPrice;
+                                  });
+                                },
+                                totalItemRemoveToCart: (v) {
+                                  setState(() {
+                                    totalPrice -= totalPrice;
+                                  });
+                                });
                           },
                         )) //
             ],
           ),
           widget.listOfItemsAddedToCart.isEmpty
-              ? Container()
+              ? Positioned(
+                  child: Container(),
+                )
               : Positioned(
                   bottom: 0,
                   right: 0,
@@ -114,28 +124,32 @@ class _CartListState extends State<CartList> {
                               fontWeight: FontWeight.bold,
                               color: const Color.fromARGB(255, 36, 96, 141)),
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 223, 223, 223),
-                              borderRadius: BorderRadius.circular(
-                                  AppDimensions.radius20)),
-                          padding: const EdgeInsets.all(
-                              AppDimensions.horizontalPadding),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const AppIconWidget(
-                                  icon: Icons.next_week_outlined),
-                              SizedBox(
-                                width: AppDimensions.width10,
-                              ),
-                              Text(
-                                'Checkout',
-                                style: TextStyle(
-                                    fontSize: AppDimensions.font16,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ],
+                        GestureDetector(
+                          onTap: () => Get.to(PaymentScreen(
+                            totalPrice: totalPrice,
+                          )),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 223, 223, 223),
+                                borderRadius: BorderRadius.circular(
+                                    AppDimensions.radius20)),
+                            padding: const EdgeInsets.all(
+                                AppDimensions.horizontalPadding),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppIconWidget(icon: Icons.next_week_outlined),
+                                SizedBox(
+                                  width: AppDimensions.width10,
+                                ),
+                                Text(
+                                  'Checkout',
+                                  style: TextStyle(
+                                      fontSize: AppDimensions.font16,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
                           ),
                         )
                       ],

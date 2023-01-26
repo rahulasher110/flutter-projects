@@ -13,4 +13,6 @@ class AppAssets {
   static const registerLottie = '$_lottiesPath/register.json';
   static const heartImage = '$_imagesPath/heart$_assetsExtension1';
   static const cartEmptyLottie = '$_lottiesPath/cart-empty.json';
+  static const paymentLottie = '$_lottiesPath/mobile-payment.json';
+  static const cardPayment = '$_lottiesPath/card-payment.json';
 }

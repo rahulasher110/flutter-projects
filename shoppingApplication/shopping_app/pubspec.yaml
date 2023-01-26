@@ -46,6 +46,7 @@ dependencies:
   shimmer: ^2.0.0
   favorite_button: ^0.0.4
   add_to_cart_animation: ^2.0.3
+  flutter_stripe: ^7.0.0
 
 dev_dependencies:
   flutter_test:

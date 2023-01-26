@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/views/authentication/landing_page.dart';
+import 'package:shopping_app/views/dashboard/payment_screen.dart';
 
 import 'views/dashboard/product_list_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -19,7 +21,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ListOfProducts(),
+      // home: const ListOfProducts(),
+      home: PaymentScreen(
+        totalPrice: 100,
+      ),
     );
   }
 }
