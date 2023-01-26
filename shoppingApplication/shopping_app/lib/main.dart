@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/views/authentication/landing_page.dart';
-import 'package:shopping_app/views/dashboard/payment_screen.dart';
+import 'package:shopping_app/views/payment/payment_screen.dart';
 
 import 'views/dashboard/product_list_screen.dart';
 

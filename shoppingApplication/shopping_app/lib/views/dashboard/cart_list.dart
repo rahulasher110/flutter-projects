@@ -5,7 +5,7 @@ import 'package:shopping_app/models/products.dart';
 import 'package:shopping_app/utils/assets.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
-import 'package:shopping_app/views/dashboard/payment_screen.dart';
+import 'package:shopping_app/views/payment/payment_screen.dart';
 import 'package:shopping_app/widgets/app_icon.dart';
 import 'package:shopping_app/widgets/cart_widget.dart';
 
