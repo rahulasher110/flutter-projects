@@ -10,6 +10,9 @@ class AppDimensions {
   static double height15 = screenHeight / 56.27;
   static double height30 = screenHeight / 28.13;
   static double height45 = screenHeight / 18.75;
+  static double height100 = screenHeight / 8.44;
+  static double height300 = screenHeight / 2.81;
+  static double height350 = screenHeight / 2.41;
 
   static double width10 = screenHeight / 84.4;
   static double width20 = screenHeight / 42.2;
@@ -20,11 +23,17 @@ class AppDimensions {
   static double font20 = screenHeight / 42.2;
   static double font12 = screenHeight / 70.33;
   static double font16 = screenHeight / 52.75;
+  static double font32 = screenHeight / 26.37;
+  static double font28 = screenHeight / 30.14;
 
   static double radius20 = screenHeight / 42.2;
   static double radius30 = screenHeight / 28.13;
   static double radius15 = screenHeight / 56.27;
   static double radius12 = screenHeight / 70.3;
+
+  static double iconsSize16 = screenHeight / 52.75;
+  static double iconSize24 = screenHeight / 35.17;
+  static double iconSize20 = screenHeight / 42.2;
 
   static double welcomePageContainerHeight = screenHeight / 2.81;
 
