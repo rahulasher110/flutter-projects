@@ -6,11 +6,13 @@ import 'dart:convert' as convert;
 
 import 'package:http/http.dart' as http;
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:shopping_app/models/products.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
 import 'package:shopping_app/views/dashboard/item_description.dart';
 import 'package:shopping_app/widgets/product_widget.dart';
+import 'package:shopping_app/widgets/shimmer_widget.dart';
 
 class ListOfProducts extends StatefulWidget {
   const ListOfProducts({super.key});
@@ -113,7 +115,7 @@ class _ListOfProductsState extends State<ListOfProducts> {
                   height: AppDimensions.height30,
                 ),
                 isLoading
-                    ? CircularProgressIndicator()
+                    ? const ListOfProductShimmerWidget()
                     : LazyLoadScrollView(
                         onEndOfPage: () {},
                         child: GridView.builder(

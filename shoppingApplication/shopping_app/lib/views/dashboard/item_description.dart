@@ -51,7 +51,7 @@ class ProductDescription extends StatelessWidget {
                     right: AppDimensions.width20,
                     top: AppDimensions.width20),
                 decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 207, 207, 207),
+                    color: const Color.fromARGB(255, 223, 223, 223),
                     borderRadius:
                         BorderRadius.circular(AppDimensions.radius20)),
                 child: Column(
