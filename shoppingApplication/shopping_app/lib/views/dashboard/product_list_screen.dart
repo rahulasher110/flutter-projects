@@ -6,11 +6,12 @@ import 'dart:convert' as convert;
 
 import 'package:http/http.dart' as http;
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:shopping_app/models/products.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
+import 'package:shopping_app/views/dashboard/cart_list.dart';
 import 'package:shopping_app/views/dashboard/item_description.dart';
+import 'package:shopping_app/widgets/app_icon.dart';
 import 'package:shopping_app/widgets/product_widget.dart';
 import 'package:shopping_app/widgets/shimmer_widget.dart';
 
@@ -24,6 +25,7 @@ class ListOfProducts extends StatefulWidget {
 class _ListOfProductsState extends State<ListOfProducts> {
   bool isLoading = false;
   List<dynamic> listOfProducts = [];
+  List<Products> listOfItemsAddToCart = [];
   List<String> listOfCategory = [
     "electronics",
     "jewelery",
@@ -65,8 +67,45 @@ class _ListOfProductsState extends State<ListOfProducts> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 242, 242, 242),
-      appBar: AppBar(),
+      backgroundColor: const Color.fromARGB(255, 242, 242, 242),
+      appBar: AppBar(
+        actions: [
+          GestureDetector(
+            onTap: () => Get.to(CartList(
+              listOfItemsAddedToCart: listOfItemsAddToCart,
+            )),
+            child: Padding(
+              padding: EdgeInsets.only(right: AppDimensions.height10),
+              child: Row(
+                children: [
+                  AppIconWidget(
+                    icon: Icons.shopping_cart_outlined,
+                    size: AppDimensions.height45,
+                  ),
+                  Container(
+                    height: AppDimensions.height30,
+                    width: AppDimensions.height30,
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 27, 99, 158),
+                        borderRadius:
+                            BorderRadius.circular(AppDimensions.radius30)),
+                    child: Center(
+                      child: Text(
+                        listOfItemsAddToCart.length.toString(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: AppColors.whiteColor,
+                            fontSize: AppDimensions.font16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppDimensions.horizontalPadding),
@@ -138,6 +177,19 @@ class _ListOfProductsState extends State<ListOfProducts> {
                                 price: listOfProducts[index].price,
                                 image: listOfProducts[index].image,
                                 rating: listOfProducts[index].rating.rate,
+                                isLiked: (v) {
+                                  setState(() {
+                                    if (v) {
+                                      listOfItemsAddToCart
+                                          .add(listOfProducts[index]);
+                                    } else {
+                                      listOfItemsAddToCart.removeWhere(
+                                          (element) =>
+                                              element.id ==
+                                              listOfProducts[index].id);
+                                    }
+                                  });
+                                },
                               ),
                             );
                           },

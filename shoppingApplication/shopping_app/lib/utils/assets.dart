@@ -11,4 +11,6 @@ class AppAssets {
   static const welcomeImage4 = '$_imagesPath/welcome4$_assetsExtension2';
   static const loginLottie = '$_lottiesPath/login.json';
   static const registerLottie = '$_lottiesPath/register.json';
+  static const heartImage = '$_imagesPath/heart$_assetsExtension1';
+  static const cartEmptyLottie = '$_lottiesPath/cart-empty.json';
 }
