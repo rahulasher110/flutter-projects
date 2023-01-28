@@ -1,13 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shopping_app/utils/assets.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
 import 'package:shopping_app/views/authentication/signup_page.dart';
+import 'package:shopping_app/views/dashboard/product_list_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -110,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                                   horizontal: AppDimensions.width20,
                                   vertical: 16),
                             ),
-                            onPressed: () {},
+                            onPressed: () => Get.to(const ListOfProducts()),
                             child: Text(
                               'Login',
                               style: TextStyle(
@@ -146,4 +145,22 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  // Future signIn() async {
+  //   try {
+  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //         email: emailController.text.trim(),
+  //         password: passwordController.text.trim());
+  //     emailController.clear();
+  //     passwordController.clear();
+  //     Get.to(const ListOfProducts());
+  //   } on FirebaseAuthException catch (e) {
+  //     Get.snackbar(
+  //       e.message.toString(),
+  //       "",
+  //       icon: const Icon(Icons.person, color: Colors.blue),
+  //       snackPosition: SnackPosition.BOTTOM,
+  //     );
+  //   }
+  // }
 }

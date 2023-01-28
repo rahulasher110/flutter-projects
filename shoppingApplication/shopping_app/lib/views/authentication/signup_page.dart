@@ -140,7 +140,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   horizontal: AppDimensions.width20,
                                   vertical: 16),
                             ),
-                            onPressed: () {},
+                            onPressed: () => Get.to(const LoginPage()),
                             child: const Text('Sign up')),
                       )
                     ],
@@ -171,4 +171,26 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
+
+  // Future signup() async {
+  //   final isValid = _formKey.currentState!.validate();
+  //   if (!isValid) return;
+
+  //   try {
+  //     await FirebaseAuth.instance.createUserWithEmailAndPassword(
+  //         email: emailController.text.trim(),
+  //         password: passwordController.text.trim());
+
+  //     emailController.clear();
+  //     passwordController.clear();
+  //     Get.to(const LoginPage());
+  //   } on FirebaseAuthException catch (e) {
+  //     Get.snackbar(
+  //       e.message.toString(),
+  //       "",
+  //       icon: const Icon(Icons.person, color: Colors.blue),
+  //       snackPosition: SnackPosition.BOTTOM,
+  //     );
+  //   }
+  // }
 }

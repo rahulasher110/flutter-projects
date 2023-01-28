@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:convert' as convert;
 
 import 'package:http/http.dart' as http;
@@ -23,6 +24,7 @@ class ListOfProducts extends StatefulWidget {
 }
 
 class _ListOfProductsState extends State<ListOfProducts> {
+  final _myBox = Hive.box('cartBox');
   final scrollController = ScrollController();
   bool isLoading = false;
   bool isLoadingVertical = false;
@@ -56,10 +58,9 @@ class _ListOfProductsState extends State<ListOfProducts> {
       for (var item in jsonResp) {
         listOfProducts.add(Products.fromJson(item));
       }
-      print('object');
     } else {
       Get.snackbar(
-        'Something went wrong. Please try after some time!',
+        'Something went wrong. Please try after some time! \nstatusCode: ${response.statusCode}',
         "",
         snackPosition: SnackPosition.TOP,
       );
@@ -69,6 +70,16 @@ class _ListOfProductsState extends State<ListOfProducts> {
     });
   }
 
+  void writeData() {
+    _myBox.put('itemsAddToCart', listOfItemsAddToCart);
+  }
+
+  void removeData() {}
+
+  void readData() {
+    _myBox.get('itemsAddToCart');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,9 +87,12 @@ class _ListOfProductsState extends State<ListOfProducts> {
       appBar: AppBar(
         actions: [
           GestureDetector(
-            onTap: () => Get.to(CartList(
-              listOfItemsAddedToCart: listOfItemsAddToCart,
-            )),
+            onTap: () {
+              readData();
+              Get.to(CartList(
+                listOfItemsAddedToCart: listOfItemsAddToCart,
+              ));
+            },
             child: Padding(
               padding: EdgeInsets.only(right: AppDimensions.height10),
               child: Row(
@@ -224,11 +238,13 @@ class _ListOfProductsState extends State<ListOfProducts> {
                                     if (v) {
                                       listOfItemsAddToCart
                                           .add(listOfProducts[index]);
+                                      writeData();
                                     } else {
                                       listOfItemsAddToCart.removeWhere(
                                           (element) =>
                                               element.id ==
                                               listOfProducts[index].id);
+                                      removeData();
                                       ;
                                     }
                                   });

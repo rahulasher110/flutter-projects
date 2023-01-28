@@ -46,7 +46,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         backgroundColor: AppColors.whiteColor,
         elevation: 0.5,
         leading: AppIconWidget(
-          onClick: () => Get.back,
+          onClick: () => Get.back(),
           icon: Icons.arrow_back_ios,
           backgroundColor: AppColors.whiteColor,
           iconColor: Colors.black,

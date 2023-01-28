@@ -11,10 +11,9 @@ import 'package:shopping_app/widgets/cart_widget.dart';
 
 class CartList extends StatefulWidget {
   final List<Products> listOfItemsAddedToCart;
-  const CartList({
-    super.key,
-    required this.listOfItemsAddedToCart,
-  });
+  final Function(bool remove, int index)? reduceItems;
+  const CartList(
+      {super.key, required this.listOfItemsAddedToCart, this.reduceItems});
 
   @override
   State<CartList> createState() => _CartListState();
@@ -83,18 +82,28 @@ class _CartListState extends State<CartList> {
                           itemCount: widget.listOfItemsAddedToCart.length,
                           itemBuilder: (context, index) {
                             return CartWidget(
-                                productDetail:
-                                    widget.listOfItemsAddedToCart[index],
-                                totalItemAddToCart: (v) {
-                                  setState(() {
-                                    totalPrice += totalPrice;
-                                  });
-                                },
-                                totalItemRemoveToCart: (v) {
-                                  setState(() {
-                                    totalPrice -= totalPrice;
-                                  });
+                              productDetail:
+                                  widget.listOfItemsAddedToCart[index],
+                              totalItemAddToCart: (v) {
+                                setState(() {
+                                  totalPrice += v;
                                 });
+                              },
+                              totalItemRemoveToCart: (v) {
+                                setState(() {
+                                  totalPrice -= v;
+                                });
+                              },
+                              removeItem: (remove, count, val) {
+                                if (remove) {
+                                  setState(() {
+                                    widget.listOfItemsAddedToCart
+                                        .removeAt(index);
+                                    totalPrice -= count * val;
+                                  });
+                                }
+                              },
+                            );
                           },
                         )) //
             ],
@@ -118,7 +127,7 @@ class _CartListState extends State<CartList> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '₹ ${totalPrice.toString()}',
+                          '₹ ${totalPrice.toPrecision(2).toString()}',
                           style: TextStyle(
                               fontSize: AppDimensions.font28,
                               fontWeight: FontWeight.bold,
