@@ -12,8 +12,16 @@ import 'package:shopping_app/widgets/cart_widget.dart';
 class CartList extends StatefulWidget {
   final List<Products> listOfItemsAddedToCart;
   final Function(bool remove, int index)? reduceItems;
-  const CartList(
-      {super.key, required this.listOfItemsAddedToCart, this.reduceItems});
+  int? countTotalItems;
+  double? totalPriceOfItems;
+  final Function(bool isEmpty)? cartIsEmpty;
+  CartList(
+      {super.key,
+      required this.listOfItemsAddedToCart,
+      this.reduceItems,
+      this.countTotalItems,
+      this.totalPriceOfItems,
+      this.cartIsEmpty});
 
   @override
   State<CartList> createState() => _CartListState();
@@ -26,6 +34,7 @@ class _CartListState extends State<CartList> {
     for (var item in widget.listOfItemsAddedToCart) {
       totalPrice += item.price ?? 0;
     }
+    totalPrice = widget.totalPriceOfItems ?? totalPrice;
     super.initState();
   }
 
@@ -59,6 +68,8 @@ class _CartListState extends State<CartList> {
                     onPressed: () {
                       setState(() {
                         widget.listOfItemsAddedToCart.clear();
+                        widget.countTotalItems = 0;
+                        widget.totalPriceOfItems = 0;
                       });
                     },
                   ),
@@ -94,12 +105,14 @@ class _CartListState extends State<CartList> {
                                   totalPrice -= v;
                                 });
                               },
+                              countTotalItems: widget.countTotalItems,
                               removeItem: (remove, count, val) {
                                 if (remove) {
                                   setState(() {
                                     widget.listOfItemsAddedToCart
                                         .removeAt(index);
                                     totalPrice -= count * val;
+                                    widget.cartIsEmpty!(true);
                                   });
                                 }
                               },

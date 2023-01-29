@@ -24,12 +24,14 @@ class ListOfProducts extends StatefulWidget {
 }
 
 class _ListOfProductsState extends State<ListOfProducts> {
-  final _myBox = Hive.box('cartBox');
+  // final _myBox = Hive.box('cartBox');
   final scrollController = ScrollController();
   bool isLoading = false;
   bool isLoadingVertical = false;
   final int increment = 10;
-  String? selectCategory;
+  final List<String> _filters = <String>[];
+  final List<Products> _displayFilters = <Products>[];
+  final TextEditingController _searchController = TextEditingController();
 
   List<dynamic> listOfProducts = [];
   List<Products> listOfItemsAddToCart = [];
@@ -70,25 +72,84 @@ class _ListOfProductsState extends State<ListOfProducts> {
     });
   }
 
-  void writeData() {
-    _myBox.put('itemsAddToCart', listOfItemsAddToCart);
-  }
-
   void removeData() {}
 
-  void readData() {
-    _myBox.get('itemsAddToCart');
+  void addToFilters(String category) {
+    for (var item in listOfProducts) {
+      if (category == item.category) {
+        _displayFilters.add(item);
+      }
+    }
   }
+
+  void removeFilters(String category) {
+    _displayFilters.removeWhere((element) => element.category == category);
+  }
+
+  Widget appBarTitle = const Text("Product");
+  Icon actionIcon = const Icon(Icons.search);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 242, 242, 242),
       appBar: AppBar(
+        centerTitle: true,
+        title: appBarTitle,
         actions: [
+          IconButton(
+            icon: actionIcon,
+            onPressed: () {
+              setState(() {
+                if (actionIcon.icon == Icons.search) {
+                  actionIcon = const Icon(Icons.close);
+                  appBarTitle = TextField(
+                    controller: _searchController,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    decoration: InputDecoration(
+                        prefixIcon: GestureDetector(
+                            onTap: () {
+                              if (_searchController.text.isNotEmpty) {
+                                if (listOfCategory
+                                    .contains(_searchController.text)) {
+                                  setState(() {
+                                    _filters.add(_searchController.text);
+                                    addToFilters(_searchController.text);
+                                  });
+                                } else {
+                                  Get.snackbar(
+                                    'Type correct category',
+                                    "",
+                                    snackPosition: SnackPosition.TOP,
+                                  );
+                                }
+                              } else {
+                                Get.snackbar(
+                                  'Please enter something',
+                                  "",
+                                  snackPosition: SnackPosition.TOP,
+                                );
+                              }
+                            },
+                            child:
+                                const Icon(Icons.search, color: Colors.white)),
+                        hintText: "Search...",
+                        hintStyle: const TextStyle(color: Colors.white)),
+                  );
+                } else {
+                  _filters.clear();
+                  _displayFilters.clear();
+                  actionIcon = const Icon(Icons.search);
+                  appBarTitle = const Text("Products");
+                }
+              });
+            },
+          ),
           GestureDetector(
             onTap: () {
-              readData();
+              // readData();
               Get.to(CartList(
                 listOfItemsAddedToCart: listOfItemsAddToCart,
               ));
@@ -132,76 +193,42 @@ class _ListOfProductsState extends State<ListOfProducts> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Our Products',
-                      style: TextStyle(
-                          fontSize: AppDimensions.font32,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Filters',
-                            style: TextStyle(color: AppColors.greyTextColor),
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          AppIconWidget(
-                            icon: Icons.format_list_bulleted_sharp,
-                            size: AppDimensions.iconsSize16,
-                            iconColor: Colors.grey,
-                            backgroundColor:
-                                const Color.fromARGB(255, 242, 242, 242),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                Text(
+                  'Our Products',
+                  style: TextStyle(
+                      fontSize: AppDimensions.font32,
+                      fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   height: AppDimensions.height20,
                 ),
-                SizedBox(
-                  height: AppDimensions.height45,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: listOfCategory.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectCategory = listOfCategory[index];
-                          });
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(
-                                  AppDimensions.radius12)),
-                          child: Center(
-                              child: Padding(
-                            padding: AppDimensions.pagePadding,
-                            child: Text(
-                              listOfCategory[index],
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          )),
-                        ),
-                      );
-                    },
-                  ),
+                Wrap(
+                  spacing: AppDimensions.width10,
+                  children: listOfCategory.map((e) {
+                    return FilterChip(
+                      label: Text(
+                        e,
+                      ),
+                      elevation: 1,
+                      selectedColor: Colors.blue,
+                      selected: _filters.contains(e),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                      onSelected: (bool value) {
+                        setState(() {
+                          if (value) {
+                            if (!_filters.contains(e)) {
+                              _filters.add(e);
+                              addToFilters(e);
+                            }
+                          } else {
+                            _filters.removeWhere((element) => element == e);
+                            removeFilters(e);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
                 ),
                 SizedBox(
                   height: AppDimensions.height30,
@@ -220,37 +247,78 @@ class _ListOfProductsState extends State<ListOfProducts> {
                             mainAxisSpacing: 20,
                             crossAxisCount: 2,
                           ),
-                          itemCount: listOfProducts.length,
+                          itemCount: _filters.isEmpty
+                              ? listOfProducts.length
+                              : _displayFilters.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return GestureDetector(
-                              onTap: () => Get.to(ProductDescription(
-                                itemDescription: listOfProducts[index],
-                              )),
-                              child: ProductWidget(
-                                title: listOfProducts[index].title,
-                                price: listOfProducts[index].price,
-                                image: listOfProducts[index].image,
-                                rating: listOfProducts[index].rating.rate,
-                                category: listOfProducts[index].category,
-                                selectedCategory: selectCategory ?? '',
-                                isLiked: (v) {
-                                  setState(() {
-                                    if (v) {
-                                      listOfItemsAddToCart
-                                          .add(listOfProducts[index]);
-                                      writeData();
-                                    } else {
-                                      listOfItemsAddToCart.removeWhere(
-                                          (element) =>
-                                              element.id ==
-                                              listOfProducts[index].id);
-                                      removeData();
-                                      ;
-                                    }
-                                  });
-                                },
-                              ),
-                            );
+                            return _filters.isEmpty
+                                ? GestureDetector(
+                                    onTap: () => Get.to(ProductDescription(
+                                      itemDescription: listOfProducts[index],
+                                    )),
+                                    child: ProductWidget(
+                                      title: listOfProducts[index].title,
+                                      price: listOfProducts[index].price,
+                                      image: listOfProducts[index].image,
+                                      rating: listOfProducts[index].rating.rate,
+                                      category: listOfProducts[index].category,
+                                      isLiked: (v) {
+                                        setState(() {
+                                          if (v) {
+                                            listOfItemsAddToCart
+                                                .add(listOfProducts[index]);
+                                            // writeData();
+                                          } else {
+                                            listOfItemsAddToCart.removeWhere(
+                                                (element) =>
+                                                    element.id ==
+                                                    listOfProducts[index].id);
+                                            removeData();
+                                            ;
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  )
+                                : GestureDetector(
+                                    onTap: () => Get.to(ProductDescription(
+                                      itemDescription: _displayFilters[index],
+                                    )),
+                                    child: ProductWidget(
+                                      title: _displayFilters[index]
+                                          .title
+                                          .toString(),
+                                      price: _displayFilters[index]
+                                          .price!
+                                          .toDouble(),
+                                      image: _displayFilters[index]
+                                          .image
+                                          .toString(),
+                                      rating: _displayFilters[index]
+                                          .rating!
+                                          .rate!
+                                          .toDouble(),
+                                      category: _displayFilters[index]
+                                          .category
+                                          .toString(),
+                                      isLiked: (v) {
+                                        setState(() {
+                                          if (v) {
+                                            listOfItemsAddToCart
+                                                .add(listOfProducts[index]);
+                                            // writeData();
+                                          } else {
+                                            listOfItemsAddToCart.removeWhere(
+                                                (element) =>
+                                                    element.id ==
+                                                    listOfProducts[index].id);
+                                            removeData();
+                                            ;
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  );
                           },
                         ),
                       ),

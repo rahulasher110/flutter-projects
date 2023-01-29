@@ -1,6 +1,7 @@
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:shopping_app/models/products.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
 
@@ -9,18 +10,17 @@ class ProductWidget extends StatefulWidget {
   final String title;
   final double price;
   final double rating;
-  final String? selectedCategory;
   final String category;
   final Function(bool val) isLiked;
-  const ProductWidget(
-      {super.key,
-      required this.title,
-      required this.price,
-      required this.image,
-      required this.rating,
-      required this.isLiked,
-      this.selectedCategory,
-      required this.category});
+  const ProductWidget({
+    super.key,
+    required this.title,
+    required this.price,
+    required this.image,
+    required this.rating,
+    required this.isLiked,
+    required this.category,
+  });
 
   @override
   State<ProductWidget> createState() => _ProductWidgetState();
@@ -32,7 +32,6 @@ class _ProductWidgetState extends State<ProductWidget> {
     return Stack(
       children: [
         Material(
-          elevation: widget.selectedCategory == widget.category ? 20 : 0,
           borderRadius:
               BorderRadius.all(Radius.circular(AppDimensions.radius20)),
           child: Container(

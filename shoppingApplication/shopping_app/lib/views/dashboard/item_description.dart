@@ -6,12 +6,20 @@ import 'package:get/get.dart';
 import 'package:shopping_app/models/products.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
+import 'package:shopping_app/views/dashboard/cart_list.dart';
 import 'package:shopping_app/widgets/app_icon.dart';
 
-class ProductDescription extends StatelessWidget {
+class ProductDescription extends StatefulWidget {
   final Products itemDescription;
   const ProductDescription({super.key, required this.itemDescription});
 
+  @override
+  State<ProductDescription> createState() => _ProductDescriptionState();
+}
+
+class _ProductDescriptionState extends State<ProductDescription> {
+  int count = 0;
+  final List<Products> itemsAdd = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +35,8 @@ class ProductDescription extends StatelessWidget {
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: NetworkImage(itemDescription.image.toString()))),
+                        image: NetworkImage(
+                            widget.itemDescription.image.toString()))),
               )),
           Positioned(
               top: AppDimensions.height45,
@@ -40,7 +49,17 @@ class ProductDescription extends StatelessWidget {
                     onClick: () => Get.back(),
                     icon: Icons.arrow_back_ios,
                   ),
-                  AppIconWidget(icon: Icons.shopping_cart_outlined)
+                  AppIconWidget(
+                      icon: Icons.shopping_cart_outlined,
+                      onClick: () => Get.to(CartList(
+                          listOfItemsAddedToCart: itemsAdd,
+                          countTotalItems: count,
+                          cartIsEmpty: (isEmpty) {
+                            count = 0;
+                          },
+                          totalPriceOfItems: itemsAdd[0].price != null
+                              ? count * itemsAdd[0].price!.toDouble()
+                              : 0)))
                 ],
               )),
           Positioned(
@@ -58,9 +77,10 @@ class ProductDescription extends StatelessWidget {
                     borderRadius:
                         BorderRadius.circular(AppDimensions.radius20)),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      itemDescription.title.toString(),
+                      widget.itemDescription.title.toString(),
                       style: const TextStyle(
                           fontSize: 22,
                           color: Color.fromARGB(255, 36, 96, 141),
@@ -70,7 +90,7 @@ class ProductDescription extends StatelessWidget {
                       height: AppDimensions.height15,
                     ),
                     Text(
-                      itemDescription.description.toString(),
+                      widget.itemDescription.description.toString(),
                       style: const TextStyle(
                           color: Color.fromARGB(255, 54, 109, 152),
                           fontWeight: FontWeight.w500,
@@ -83,7 +103,8 @@ class ProductDescription extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         RatingBarIndicator(
-                          rating: itemDescription.rating!.rate!.toDouble(),
+                          rating:
+                              widget.itemDescription.rating!.rate!.toDouble(),
                           itemBuilder: (context, index) => const Icon(
                             Icons.star,
                             color: Color.fromARGB(255, 7, 85, 255),
@@ -92,11 +113,18 @@ class ProductDescription extends StatelessWidget {
                           itemSize: AppDimensions.height15,
                         ),
                         Text(
-                          ' (${itemDescription.rating!.rate.toString()})',
+                          ' (${widget.itemDescription.rating!.rate.toString()})',
                           style: const TextStyle(
                               color: Color.fromARGB(255, 146, 146, 146)),
                         ),
                       ],
+                    ),
+                    SizedBox(
+                      height: AppDimensions.height30,
+                    ),
+                    Text(
+                      'Number of items added to cart : $count',
+                      style: TextStyle(fontSize: AppDimensions.font20),
                     )
                   ],
                 ),
@@ -110,38 +138,48 @@ class ProductDescription extends StatelessWidget {
                     color: AppColors.whiteColor,
                     borderRadius:
                         BorderRadius.circular(AppDimensions.radius20)),
-                padding: EdgeInsets.all(AppDimensions.horizontalPadding),
+                padding: const EdgeInsets.all(AppDimensions.horizontalPadding),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '₹ ${itemDescription.price.toString()}',
+                      '₹ ${widget.itemDescription.price.toString()}',
                       style: TextStyle(
                           fontSize: AppDimensions.font28,
                           fontWeight: FontWeight.bold,
                           color: const Color.fromARGB(255, 36, 96, 141)),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 223, 223, 223),
-                          borderRadius:
-                              BorderRadius.circular(AppDimensions.radius20)),
-                      padding:
-                          const EdgeInsets.all(AppDimensions.horizontalPadding),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppIconWidget(icon: Icons.shopping_cart_outlined),
-                          SizedBox(
-                            width: AppDimensions.width10,
-                          ),
-                          Text(
-                            'Add To Cart',
-                            style: TextStyle(
-                                fontSize: AppDimensions.font16,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        if (itemsAdd.isEmpty) {
+                          itemsAdd.add(widget.itemDescription);
+                        }
+                        setState(() {
+                          count++;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 223, 223, 223),
+                            borderRadius:
+                                BorderRadius.circular(AppDimensions.radius20)),
+                        padding: const EdgeInsets.all(
+                            AppDimensions.horizontalPadding),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AppIconWidget(icon: Icons.shopping_cart_outlined),
+                            SizedBox(
+                              width: AppDimensions.width10,
+                            ),
+                            Text(
+                              'Add To Cart',
+                              style: TextStyle(
+                                  fontSize: AppDimensions.font16,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
                       ),
                     )
                   ],

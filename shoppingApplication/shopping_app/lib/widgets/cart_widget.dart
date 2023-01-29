@@ -10,6 +10,8 @@ class CartWidget extends StatefulWidget {
   Products productDetail;
   final Function(double val) totalItemAddToCart;
   final Function(double val) totalItemRemoveToCart;
+  final int? countTotalItems;
+
   final Function(bool removeItem, int count, double val)? removeItem;
 
   CartWidget(
@@ -17,7 +19,8 @@ class CartWidget extends StatefulWidget {
       required this.productDetail,
       required this.totalItemAddToCart,
       required this.totalItemRemoveToCart,
-      this.removeItem});
+      this.removeItem,
+      this.countTotalItems});
 
   @override
   State<CartWidget> createState() => _CartWidgetState();
@@ -25,9 +28,17 @@ class CartWidget extends StatefulWidget {
 
 class _CartWidgetState extends State<CartWidget> {
   int count = 1;
-
+  bool reduceItem = false;
   @override
   Widget build(BuildContext context) {
+    if (widget.countTotalItems != null) {
+      count = (count <= widget.countTotalItems!
+              ? reduceItem
+                  ? count
+                  : widget.countTotalItems
+              : count)!
+          .toInt();
+    }
     return Container(
       padding: EdgeInsets.all(AppDimensions.width15),
       decoration: BoxDecoration(
@@ -86,6 +97,7 @@ class _CartWidgetState extends State<CartWidget> {
                       size: AppDimensions.iconSize24,
                       onClick: () {
                         setState(() {
+                          reduceItem = false;
                           count++;
                         });
                         widget.totalItemAddToCart(
@@ -102,6 +114,7 @@ class _CartWidgetState extends State<CartWidget> {
                     AppIconWidget(
                       onClick: () {
                         setState(() {
+                          reduceItem = true;
                           if (count > 1) {
                             count--;
                             widget.totalItemRemoveToCart(

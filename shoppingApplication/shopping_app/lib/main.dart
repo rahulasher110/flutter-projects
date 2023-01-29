@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shopping_app/models/hive_models.dart';
 import 'package:shopping_app/views/authentication/landing_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  var box = await Hive.openBox('cartBox');
+  // var directory = await getApplicationDocumentsDirectory();
+  // Hive.init(directory.path);
+  // Hive.registerAdapter(ProductsAdapter());
+
+  // await Hive.openBox<Products>('cartBox');
   runApp(const MyApp());
 }
 
