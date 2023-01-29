@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,6 +9,7 @@ import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
 import 'package:shopping_app/views/authentication/signup_page.dart';
 import 'package:shopping_app/views/dashboard/product_list_screen.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -103,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                                         color: AppColors.primaryColor),
                                   ))),
                           SizedBox(
-                            height: AppDimensions.height45,
+                            height: AppDimensions.height30,
                           ),
                           SizedBox(
                             width: Get.width * 0.5,
@@ -121,10 +124,40 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 onPressed: () => Get.to(const ListOfProducts()),
                                 child: Text(
-                                  'Login',
+                                  'Login with firebase',
                                   style: TextStyle(
                                       fontSize: AppDimensions.font16,
                                       fontWeight: FontWeight.w500),
+                                )),
+                          ),
+                          SizedBox(
+                            height: AppDimensions.height10,
+                          ),
+                          SizedBox(
+                            width: Get.width * 0.6,
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  backgroundColor:
+                                      AppColors.scaffoldBackgroundColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimensions.radius30)),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: AppDimensions.width20,
+                                      vertical: 16),
+                                ),
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    await loginWithFakeStoreApi();
+                                  }
+                                },
+                                child: Text(
+                                  'Login with fakeStoreApi',
+                                  style: TextStyle(
+                                      fontSize: AppDimensions.font16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black),
                                 )),
                           )
                         ],
@@ -175,4 +208,41 @@ class _LoginPageState extends State<LoginPage> {
   //     );
   //   }
   // }
+
+  Future loginWithFakeStoreApi() async {
+    try {
+      var url = Uri.https('fakestoreapi.com', '/users', {});
+
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var jsonResp = jsonDecode(response.body);
+        for (var item in jsonResp) {
+          if (item['email'] == emailController.text &&
+              item['password'] == passwordController.text) {
+            Get.to(const ListOfProducts());
+          }
+        }
+        Get.snackbar(
+          'please enter valid emailId and password',
+          "",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else {
+        Get.snackbar(
+          'Something went wrong. Please try after some time! \nstatusCode: ${response.statusCode}',
+          "",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+      emailController.clear();
+      passwordController.clear();
+    } catch (e) {
+      Get.snackbar(
+        e.toString(),
+        "",
+        icon: const Icon(Icons.person, color: Colors.blue),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
 }
