@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lottie/lottie.dart';
-import 'package:shopping_app/models/products.dart';
+import 'package:shopping_app/boxes/box.dart';
+import 'package:shopping_app/models/hive_models.dart';
 import 'package:shopping_app/utils/assets.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
@@ -10,18 +12,9 @@ import 'package:shopping_app/widgets/app_icon.dart';
 import 'package:shopping_app/widgets/cart_widget.dart';
 
 class CartList extends StatefulWidget {
-  final List<Products> listOfItemsAddedToCart;
-  final Function(bool remove, int index)? reduceItems;
-  int? countTotalItems;
-  double? totalPriceOfItems;
-  final Function(bool isEmpty)? cartIsEmpty;
-  CartList(
-      {super.key,
-      required this.listOfItemsAddedToCart,
-      this.reduceItems,
-      this.countTotalItems,
-      this.totalPriceOfItems,
-      this.cartIsEmpty});
+  final Function(int val)? itemQuantity;
+  final Function(bool val)? deleteAllItems;
+  const CartList({super.key, this.itemQuantity, this.deleteAllItems});
 
   @override
   State<CartList> createState() => _CartListState();
@@ -29,12 +22,13 @@ class CartList extends StatefulWidget {
 
 class _CartListState extends State<CartList> {
   double totalPrice = 0;
+  final box = Boxes.getData();
   @override
   void initState() {
-    for (var item in widget.listOfItemsAddedToCart) {
-      totalPrice += item.price ?? 0;
+    for (var item in box.values.toList()) {
+      totalPrice += (item.price! * item.quantity!.toInt()).toDouble();
     }
-    totalPrice = widget.totalPriceOfItems ?? totalPrice;
+    totalPrice.toPrecision(2);
     super.initState();
   }
 
@@ -53,9 +47,8 @@ class _CartListState extends State<CartList> {
                 expandedHeight: AppDimensions.height100,
                 backgroundColor: Colors.blue,
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios),
-                  onPressed: () => Get.back(),
-                ),
+                    icon: const Icon(Icons.arrow_back_ios),
+                    onPressed: () => Get.back()),
                 title: Text(
                   'My Cart',
                   style: TextStyle(
@@ -66,62 +59,112 @@ class _CartListState extends State<CartList> {
                   IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
-                      setState(() {
-                        widget.listOfItemsAddedToCart.clear();
-                        widget.countTotalItems = 0;
-                        widget.totalPriceOfItems = 0;
-                      });
+                      if (widget.deleteAllItems != null) {
+                        Hive.box<ProductsModels>('cartBox').clear();
+                        box.deleteAll(box.keys);
+                        widget.deleteAllItems!(true);
+                      }
+                      if (widget.itemQuantity != null) {
+                        widget.itemQuantity!(0);
+                      }
+                      setState(() {});
                     },
                   ),
                 ],
               ),
               SliverToBoxAdapter(
-                  child: widget.listOfItemsAddedToCart.isEmpty
-                      ? Center(
-                          child: Column(
-                          children: [
-                            LottieBuilder.asset(AppAssets.cartEmptyLottie),
-                            const Text(
-                              'Oops, your cart is empty!',
-                              style: TextStyle(fontSize: 18),
-                            )
-                          ],
-                        ))
-                      : ListView.builder(
-                          padding: EdgeInsets.only(top: AppDimensions.height20),
-                          shrinkWrap: true,
-                          itemCount: widget.listOfItemsAddedToCart.length,
-                          itemBuilder: (context, index) {
-                            return CartWidget(
-                              productDetail:
-                                  widget.listOfItemsAddedToCart[index],
-                              totalItemAddToCart: (v) {
-                                setState(() {
-                                  totalPrice += v;
-                                });
-                              },
-                              totalItemRemoveToCart: (v) {
-                                setState(() {
-                                  totalPrice -= v;
-                                });
-                              },
-                              countTotalItems: widget.countTotalItems,
-                              removeItem: (remove, count, val) {
-                                if (remove) {
+                child: box.isEmpty
+                    ? Center(
+                        child: Column(
+                        children: [
+                          LottieBuilder.asset(AppAssets.cartEmptyLottie),
+                          const Text(
+                            'Oops, your cart is empty!',
+                            style: TextStyle(fontSize: 18),
+                          )
+                        ],
+                      ))
+                    : ValueListenableBuilder<Box<ProductsModels>>(
+                        valueListenable: Boxes.getData().listenable(),
+                        builder: (context, box, _) {
+                          var data = box.values.toList().cast<ProductsModels>();
+                          return ListView.builder(
+                            padding:
+                                EdgeInsets.only(top: AppDimensions.height20),
+                            shrinkWrap: true,
+                            itemCount: box.length,
+                            itemBuilder: (context, index) {
+                              return CartWidget(
+                                productDetail: ProductsModels(
+                                    id: data[index].id,
+                                    title: data[index].title,
+                                    price: data[index].price,
+                                    description: data[index].description,
+                                    category: data[index].category,
+                                    image: data[index].image,
+                                    quantity: data[index].quantity),
+                                totalItemAddToCart: (v) {
                                   setState(() {
-                                    widget.listOfItemsAddedToCart
-                                        .removeAt(index);
-                                    totalPrice -= count * val;
-                                    widget.cartIsEmpty!(true);
+                                    totalPrice += v;
+                                    if (widget.itemQuantity != null) {
+                                      widget.itemQuantity!(
+                                          data[index].quantity!.toInt());
+                                    }
                                   });
-                                }
-                              },
-                            );
-                          },
-                        )) //
+                                },
+                                totalItemRemoveToCart: (v, quant) {
+                                  setState(() {
+                                    if (quant > 1) {
+                                      totalPrice -= v;
+                                      if (widget.itemQuantity != null) {
+                                        widget.itemQuantity!(
+                                            data[index].quantity!.toInt());
+                                      }
+                                    }
+                                  });
+                                },
+                                removeItem: (remove, count, val) {
+                                  if (remove) {
+                                    setState(() {
+                                      var allData = box.values
+                                          .toList()
+                                          .cast<ProductsModels>();
+                                      int getIdOfUnLikedItem =
+                                          data[index].id!.toInt();
+                                      int getIndexOfItemInBox = 0;
+                                      int indexOfItem = 0;
+                                      int getKeys = 0;
+                                      for (var item in allData) {
+                                        if (item.id == getIdOfUnLikedItem) {
+                                          getIdOfUnLikedItem = item.id!;
+                                          getIndexOfItemInBox = indexOfItem;
+                                          getKeys = item.key;
+                                        }
+                                        indexOfItem++;
+                                      }
+                                      deleteData(data[getIndexOfItemInBox]);
+                                      box.delete(getKeys);
+                                      totalPrice -= count * val;
+                                      if (widget.itemQuantity != null) {
+                                        widget.itemQuantity!(0);
+                                      }
+                                      if (box.isEmpty) {
+                                        if (widget.deleteAllItems != null) {
+                                          widget.deleteAllItems!(true);
+                                        }
+                                      }
+                                    });
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+              ) //
             ],
           ),
-          widget.listOfItemsAddedToCart.isEmpty
+          box.isEmpty
               ? Positioned(
                   child: Container(),
                 )
@@ -180,5 +223,9 @@ class _CartListState extends State<CartList> {
         ],
       ),
     );
+  }
+
+  void deleteData(ProductsModels products) async {
+    await products.delete();
   }
 }

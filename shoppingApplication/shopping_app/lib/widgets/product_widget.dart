@@ -103,12 +103,12 @@ class _ProductWidgetState extends State<ProductWidget> {
           right: AppDimensions.height10,
           top: AppDimensions.height10,
           child: FavoriteButton(
-            isFavorite: true,
+            isFavorite: false,
             iconSize: 32,
-            iconDisabledColor: Colors.red,
-            iconColor: Colors.grey,
+            iconDisabledColor: Colors.grey,
+            iconColor: Colors.red,
             valueChanged: (v) {
-              widget.isLiked(!v);
+              widget.isLiked(v);
             },
           ),
         ),

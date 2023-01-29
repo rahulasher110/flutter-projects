@@ -7,11 +7,11 @@ import 'package:shopping_app/views/authentication/landing_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // var directory = await getApplicationDocumentsDirectory();
-  // Hive.init(directory.path);
-  // Hive.registerAdapter(ProductsAdapter());
+  var directory = await getApplicationDocumentsDirectory();
+  Hive.init(directory.path);
+  Hive.registerAdapter(ProductsModelsAdapter());
 
-  // await Hive.openBox<Products>('cartBox');
+  await Hive.openBox<ProductsModels>('cartBox');
   runApp(const MyApp());
 }
 

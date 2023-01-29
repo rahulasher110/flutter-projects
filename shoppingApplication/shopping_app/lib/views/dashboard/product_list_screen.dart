@@ -7,6 +7,8 @@ import 'dart:convert' as convert;
 
 import 'package:http/http.dart' as http;
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:shopping_app/boxes/box.dart';
+import 'package:shopping_app/models/hive_models.dart';
 import 'package:shopping_app/models/products.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
@@ -15,6 +17,7 @@ import 'package:shopping_app/views/dashboard/item_description.dart';
 import 'package:shopping_app/widgets/app_icon.dart';
 import 'package:shopping_app/widgets/product_widget.dart';
 import 'package:shopping_app/widgets/shimmer_widget.dart';
+import 'package:shopping_app/models/hive_models.dart';
 
 class ListOfProducts extends StatefulWidget {
   const ListOfProducts({super.key});
@@ -24,17 +27,14 @@ class ListOfProducts extends StatefulWidget {
 }
 
 class _ListOfProductsState extends State<ListOfProducts> {
-  // final _myBox = Hive.box('cartBox');
   final scrollController = ScrollController();
   bool isLoading = false;
-  bool isLoadingVertical = false;
   final int increment = 10;
   final List<String> _filters = <String>[];
   final List<Products> _displayFilters = <Products>[];
   final TextEditingController _searchController = TextEditingController();
 
   List<dynamic> listOfProducts = [];
-  List<Products> listOfItemsAddToCart = [];
   List<String> listOfCategory = [
     "electronics",
     "jewelery",
@@ -72,8 +72,6 @@ class _ListOfProductsState extends State<ListOfProducts> {
     });
   }
 
-  void removeData() {}
-
   void addToFilters(String category) {
     for (var item in listOfProducts) {
       if (category == item.category) {
@@ -88,6 +86,7 @@ class _ListOfProductsState extends State<ListOfProducts> {
 
   Widget appBarTitle = const Text("Product");
   Icon actionIcon = const Icon(Icons.search);
+  final box = Boxes.getData();
 
   @override
   Widget build(BuildContext context) {
@@ -148,12 +147,13 @@ class _ListOfProductsState extends State<ListOfProducts> {
             },
           ),
           GestureDetector(
-            onTap: () {
-              // readData();
-              Get.to(CartList(
-                listOfItemsAddedToCart: listOfItemsAddToCart,
-              ));
-            },
+            onTap: () => Get.to(CartList(
+              deleteAllItems: (val) {
+                if (val) {
+                  setState(() {});
+                }
+              },
+            )),
             child: Padding(
               padding: EdgeInsets.only(right: AppDimensions.height10),
               child: Row(
@@ -171,7 +171,7 @@ class _ListOfProductsState extends State<ListOfProducts> {
                             BorderRadius.circular(AppDimensions.radius30)),
                     child: Center(
                       child: Text(
-                        listOfItemsAddToCart.length.toString(),
+                        box.length.toString(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: AppColors.whiteColor,
@@ -265,16 +265,43 @@ class _ListOfProductsState extends State<ListOfProducts> {
                                       isLiked: (v) {
                                         setState(() {
                                           if (v) {
-                                            listOfItemsAddToCart
-                                                .add(listOfProducts[index]);
-                                            // writeData();
+                                            final data = ProductsModels(
+                                                id: listOfProducts[index].id,
+                                                title:
+                                                    listOfProducts[index].title,
+                                                price:
+                                                    listOfProducts[index].price,
+                                                image:
+                                                    listOfProducts[index].image,
+                                                category: listOfProducts[index]
+                                                    .category,
+                                                description:
+                                                    listOfProducts[index]
+                                                        .description,
+                                                quantity: 1);
+                                            box.add(data);
+                                            data.save();
                                           } else {
-                                            listOfItemsAddToCart.removeWhere(
-                                                (element) =>
-                                                    element.id ==
-                                                    listOfProducts[index].id);
-                                            removeData();
-                                            ;
+                                            var data = box.values
+                                                .toList()
+                                                .cast<ProductsModels>();
+                                            int getIdOfUnLikedItem =
+                                                listOfProducts[index].id;
+                                            int getIndexOfItemInBox = 0;
+                                            int indexOfItem = 0;
+                                            if (data.isNotEmpty) {
+                                              for (var item in data) {
+                                                if (item.id ==
+                                                    getIdOfUnLikedItem) {
+                                                  getIdOfUnLikedItem = item.id!;
+                                                  getIndexOfItemInBox =
+                                                      indexOfItem;
+                                                }
+                                                indexOfItem++;
+                                              }
+                                              deleteData(
+                                                  data[getIndexOfItemInBox]);
+                                            }
                                           }
                                         });
                                       },
@@ -304,16 +331,41 @@ class _ListOfProductsState extends State<ListOfProducts> {
                                       isLiked: (v) {
                                         setState(() {
                                           if (v) {
-                                            listOfItemsAddToCart
-                                                .add(listOfProducts[index]);
-                                            // writeData();
+                                            final data = ProductsModels(
+                                                id: listOfProducts[index].id,
+                                                title:
+                                                    listOfProducts[index].title,
+                                                price:
+                                                    listOfProducts[index].price,
+                                                image:
+                                                    listOfProducts[index].image,
+                                                category: listOfProducts[index]
+                                                    .category,
+                                                description:
+                                                    listOfProducts[index]
+                                                        .description,
+                                                quantity: 1);
+                                            box.add(data);
+                                            data.save();
                                           } else {
-                                            listOfItemsAddToCart.removeWhere(
-                                                (element) =>
-                                                    element.id ==
-                                                    listOfProducts[index].id);
-                                            removeData();
-                                            ;
+                                            var data = box.values
+                                                .toList()
+                                                .cast<ProductsModels>();
+                                            int getIdOfUnLikedItem =
+                                                listOfProducts[index].id;
+                                            int getIndexOfItemInBox = 0;
+                                            int indexOfItem = 0;
+                                            for (var item in data) {
+                                              if (item.id ==
+                                                  getIdOfUnLikedItem) {
+                                                getIdOfUnLikedItem = item.id!;
+                                                getIndexOfItemInBox =
+                                                    indexOfItem;
+                                              }
+                                              indexOfItem++;
+                                            }
+                                            deleteData(
+                                                data[getIndexOfItemInBox]);
                                           }
                                         });
                                       },
@@ -328,5 +380,9 @@ class _ListOfProductsState extends State<ListOfProducts> {
         ),
       ),
     );
+  }
+
+  void deleteData(ProductsModels products) async {
+    await products.delete();
   }
 }

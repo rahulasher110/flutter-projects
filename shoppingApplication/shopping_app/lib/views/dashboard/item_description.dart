@@ -3,6 +3,8 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:shopping_app/boxes/box.dart';
+import 'package:shopping_app/models/hive_models.dart';
 import 'package:shopping_app/models/products.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
@@ -18,12 +20,25 @@ class ProductDescription extends StatefulWidget {
 }
 
 class _ProductDescriptionState extends State<ProductDescription> {
+  final List<ProductsModels> itemsAdd = [];
+  final box = Boxes.getData();
   int count = 0;
-  final List<Products> itemsAdd = [];
+  int quantity = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    for (var item in box.values.toList()) {
+      if (item.id == widget.itemDescription.id) {
+        quantity = item.quantity!.toInt();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 238, 238, 238),
+      backgroundColor: const Color.fromARGB(255, 238, 238, 238),
       body: Stack(
         children: [
           Positioned(
@@ -52,14 +67,12 @@ class _ProductDescriptionState extends State<ProductDescription> {
                   AppIconWidget(
                       icon: Icons.shopping_cart_outlined,
                       onClick: () => Get.to(CartList(
-                          listOfItemsAddedToCart: itemsAdd,
-                          countTotalItems: count,
-                          cartIsEmpty: (isEmpty) {
-                            count = 0;
-                          },
-                          totalPriceOfItems: itemsAdd[0].price != null
-                              ? count * itemsAdd[0].price!.toDouble()
-                              : 0)))
+                            itemQuantity: (val) {
+                              setState(() {
+                                quantity = val;
+                              });
+                            },
+                          )))
                 ],
               )),
           Positioned(
@@ -123,7 +136,7 @@ class _ProductDescriptionState extends State<ProductDescription> {
                       height: AppDimensions.height30,
                     ),
                     Text(
-                      'Number of items added to cart : $count',
+                      'Number of items added to cart : $quantity',
                       style: TextStyle(fontSize: AppDimensions.font20),
                     )
                   ],
@@ -151,11 +164,24 @@ class _ProductDescriptionState extends State<ProductDescription> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        if (itemsAdd.isEmpty) {
-                          itemsAdd.add(widget.itemDescription);
-                        }
                         setState(() {
-                          count++;
+                          if (quantity < 1) {
+                            final data = ProductsModels(
+                                id: widget.itemDescription.id,
+                                title: widget.itemDescription.title,
+                                price: widget.itemDescription.price,
+                                image: widget.itemDescription.image,
+                                category: widget.itemDescription.category,
+                                description: widget.itemDescription.description,
+                                quantity: 1);
+                            box.add(data);
+                            data.save();
+                            quantity++;
+                          } else {
+                            increaseQuantity(
+                                widget.itemDescription.id!.toInt());
+                            quantity++;
+                          }
                         });
                       },
                       child: Container(
@@ -188,5 +214,18 @@ class _ProductDescriptionState extends State<ProductDescription> {
         ],
       ),
     );
+  }
+
+  void increaseQuantity(int id) async {
+    final box = Boxes.getData();
+    var data = box.values.toList().cast<ProductsModels>();
+
+    if (data.isNotEmpty) {
+      for (var item in data) {
+        if (item.id == id) {
+          item.quantity = item.quantity! + 1;
+        }
+      }
+    }
   }
 }

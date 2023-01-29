@@ -2,7 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 part 'hive_models.g.dart';
 
 @HiveType(typeId: 0)
-class Products {
+class ProductsModels extends HiveObject {
   @HiveField(0)
   int? id;
 
@@ -24,16 +24,20 @@ class Products {
   @HiveField(6)
   Rating? rating;
 
-  Products(
+  @HiveField(7)
+  int? quantity;
+
+  ProductsModels(
       {this.id,
       this.title,
       this.price,
       this.description,
       this.category,
       this.image,
-      this.rating});
+      this.rating,
+      this.quantity});
 
-  Products.fromJson(Map<String, dynamic> json) {
+  ProductsModels.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     price = json['price'].toDouble();
@@ -41,6 +45,7 @@ class Products {
     category = json['category'];
     image = json['image'];
     rating = json['rating'] != null ? Rating.fromJson(json['rating']) : null;
+    quantity = json['quantity'];
   }
 }
 

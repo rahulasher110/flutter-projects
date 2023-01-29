@@ -1,44 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:shopping_app/boxes/box.dart';
+import 'package:shopping_app/models/hive_models.dart';
 import 'package:shopping_app/models/products.dart';
 import 'package:shopping_app/utils/colors.dart';
 import 'package:shopping_app/utils/dimensions.dart';
 import 'package:shopping_app/widgets/app_icon.dart';
 
 class CartWidget extends StatefulWidget {
-  Products productDetail;
+  ProductsModels productDetail;
   final Function(double val) totalItemAddToCart;
-  final Function(double val) totalItemRemoveToCart;
-  final int? countTotalItems;
-
+  final Function(double val, int quant) totalItemRemoveToCart;
   final Function(bool removeItem, int count, double val)? removeItem;
 
-  CartWidget(
-      {super.key,
-      required this.productDetail,
-      required this.totalItemAddToCart,
-      required this.totalItemRemoveToCart,
-      this.removeItem,
-      this.countTotalItems});
+  CartWidget({
+    super.key,
+    required this.productDetail,
+    required this.totalItemAddToCart,
+    required this.totalItemRemoveToCart,
+    this.removeItem,
+  });
 
   @override
   State<CartWidget> createState() => _CartWidgetState();
 }
 
 class _CartWidgetState extends State<CartWidget> {
-  int count = 1;
   bool reduceItem = false;
+
   @override
   Widget build(BuildContext context) {
-    if (widget.countTotalItems != null) {
-      count = (count <= widget.countTotalItems!
-              ? reduceItem
-                  ? count
-                  : widget.countTotalItems
-              : count)!
-          .toInt();
-    }
     return Container(
       padding: EdgeInsets.all(AppDimensions.width15),
       decoration: BoxDecoration(
@@ -60,7 +52,7 @@ class _CartWidgetState extends State<CartWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: AppDimensions.height150,
+                width: AppDimensions.height180,
                 child: Text(
                   widget.productDetail.title!.substring(
                       0,
@@ -87,7 +79,7 @@ class _CartWidgetState extends State<CartWidget> {
                     color: Color.fromARGB(255, 29, 60, 84)),
               ),
               SizedBox(
-                height: AppDimensions.height15,
+                height: AppDimensions.height10,
               ),
               SizedBox(
                 child: Row(
@@ -97,8 +89,7 @@ class _CartWidgetState extends State<CartWidget> {
                       size: AppDimensions.iconSize24,
                       onClick: () {
                         setState(() {
-                          reduceItem = false;
-                          count++;
+                          increaseQuantity(widget.productDetail.id!.toInt());
                         });
                         widget.totalItemAddToCart(
                             widget.productDetail.price!.toDouble());
@@ -107,19 +98,17 @@ class _CartWidgetState extends State<CartWidget> {
                     SizedBox(
                       width: AppDimensions.width10,
                     ),
-                    Text('${count < 1 ? 1 : count}'),
+                    Text('${widget.productDetail.quantity}'),
                     SizedBox(
                       width: AppDimensions.width10,
                     ),
                     AppIconWidget(
                       onClick: () {
                         setState(() {
-                          reduceItem = true;
-                          if (count > 1) {
-                            count--;
-                            widget.totalItemRemoveToCart(
-                                widget.productDetail.price!.toDouble());
-                          }
+                          decreaseQuantity(widget.productDetail.id!.toInt());
+                          widget.totalItemRemoveToCart(
+                              widget.productDetail.price!.toDouble(),
+                              widget.productDetail.quantity!.toInt());
                         });
                       },
                       icon: Icons.remove,
@@ -132,7 +121,7 @@ class _CartWidgetState extends State<CartWidget> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        widget.removeItem!(true, count,
+                        widget.removeItem!(true, widget.productDetail.quantity!,
                             widget.productDetail.price!.toDouble());
                       },
                       child: Container(
@@ -156,5 +145,33 @@ class _CartWidgetState extends State<CartWidget> {
         ],
       ),
     );
+  }
+
+  void increaseQuantity(int id) async {
+    final box = Boxes.getData();
+    var data = box.values.toList().cast<ProductsModels>();
+
+    if (data.isNotEmpty) {
+      for (var item in data) {
+        if (item.id == id) {
+          item.quantity = item.quantity! + 1;
+        }
+      }
+    }
+  }
+
+  void decreaseQuantity(int id) async {
+    final box = Boxes.getData();
+    var data = box.values.toList().cast<ProductsModels>();
+
+    if (data.isNotEmpty) {
+      for (var item in data) {
+        if (item.id == id) {
+          if (item.quantity! > 1) {
+            item.quantity = item.quantity! - 1;
+          }
+        }
+      }
+    }
   }
 }
