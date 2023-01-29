@@ -1,16 +1,25 @@
-# shopping_app
+Shopping Application
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+-   login screen
+    -   Use firebase auth with email and password
+-   Signup page
+    -   User signup with their email and password.
+    -   Store user data into firebase.
+-   After login
+    -   User land onto dashboard and dashboard has following features:
+        -   The whole list of products is visible on the product listing
+            screen with LAZY LOADING, which is a SEARCHABLE LIST VIEW.
+        -   Use
+            https://api.flutter.dev/flutter/material/FilterChip-class.html
+            for making a list filterable on different categories.
+        -   The LIST VIEW should be dynamic, according to searched
+            string.
+        -   The user should navigate the product details screen by
+            tapping on the product.
+        -   The user should be able to add products to the cart screen.
+        -   The cart should be persisted even if the user closes the app
+            from memory.
+        -   By pressing the cart button on top in the App bar, the user
+            should navigate to the cart screen.
+        -   The screen should have all the items added to the cart and
+            the option to remove items from the cart.
