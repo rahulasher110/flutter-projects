@@ -23,123 +23,135 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: AppDimensions.pagePadding,
-          child: Column(
-            children: [
-              LottieBuilder.asset(AppAssets.loginLottie),
-              SizedBox(
-                height: AppDimensions.height30,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: AppDimensions.pagePadding,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: AppDimensions.height30,
+                  ),
+                  LottieBuilder.asset(AppAssets.loginLottie),
+                  SizedBox(
+                    height: AppDimensions.height30,
+                  ),
+                  Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                              controller: emailController,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'enter your email';
+                                }
+                                if (!(RegExp(
+                                        r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+                                    .hasMatch(emailController.text))) {
+                                  return 'enter valid email';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                  enabled: true,
+                                  hintText: 'Enter email',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimensions.radius20),
+                                      borderSide: const BorderSide(
+                                          color: AppColors.primaryColor)),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimensions.radius20),
+                                      borderSide: const BorderSide(
+                                          color: AppColors.primaryColor)))),
+                          SizedBox(
+                            height: AppDimensions.height20,
+                          ),
+                          TextFormField(
+                              controller: passwordController,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'enter your password';
+                                }
+                                if (value.length < 6) {
+                                  return 'password must be atleast 6 characters long';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                  enabled: true,
+                                  hintText: 'Enter password',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimensions.radius20),
+                                      borderSide: const BorderSide(
+                                          color: AppColors.primaryColor)),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        AppDimensions.radius20),
+                                    borderSide: const BorderSide(
+                                        color: AppColors.primaryColor),
+                                  ))),
+                          SizedBox(
+                            height: AppDimensions.height45,
+                          ),
+                          SizedBox(
+                            width: Get.width * 0.5,
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0.5,
+                                  backgroundColor:
+                                      AppColors.primaryColor.withOpacity(0.8),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimensions.radius30)),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: AppDimensions.width20,
+                                      vertical: 16),
+                                ),
+                                onPressed: () => Get.to(const ListOfProducts()),
+                                child: Text(
+                                  'Login',
+                                  style: TextStyle(
+                                      fontSize: AppDimensions.font16,
+                                      fontWeight: FontWeight.w500),
+                                )),
+                          )
+                        ],
+                      )),
+                  SizedBox(
+                    height: AppDimensions.height20,
+                  ),
+                  RichText(
+                      text: TextSpan(children: [
+                    const TextSpan(
+                      text: 'Don\' have an account?',
+                      style: TextStyle(
+                          color: AppColors.greyTextColor,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    TextSpan(
+                        text: ' Sign up',
+                        style: TextStyle(
+                            fontSize: AppDimensions.font16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.blueColorAsset),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => Get.to(const SignUpPage())),
+                  ]))
+                ],
               ),
-              Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                          controller: emailController,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'enter your email';
-                            }
-                            if (!(RegExp(
-                                    r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                                .hasMatch(emailController.text))) {
-                              return 'enter valid email';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              enabled: true,
-                              hintText: 'Enter email',
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      AppDimensions.radius20),
-                                  borderSide: const BorderSide(
-                                      color: AppColors.primaryColor)),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      AppDimensions.radius20),
-                                  borderSide: const BorderSide(
-                                      color: AppColors.primaryColor)))),
-                      SizedBox(
-                        height: AppDimensions.height20,
-                      ),
-                      TextFormField(
-                          controller: passwordController,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'enter your password';
-                            }
-                            if (value.length < 6) {
-                              return 'password must be atleast 6 characters long';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              enabled: true,
-                              hintText: 'Enter password',
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      AppDimensions.radius20),
-                                  borderSide: const BorderSide(
-                                      color: AppColors.primaryColor)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                    AppDimensions.radius20),
-                                borderSide: const BorderSide(
-                                    color: AppColors.primaryColor),
-                              ))),
-                      SizedBox(
-                        height: AppDimensions.height45,
-                      ),
-                      SizedBox(
-                        width: Get.width * 0.5,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0.5,
-                              backgroundColor:
-                                  AppColors.primaryColor.withOpacity(0.8),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      AppDimensions.radius30)),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: AppDimensions.width20,
-                                  vertical: 16),
-                            ),
-                            onPressed: () => Get.to(const ListOfProducts()),
-                            child: Text(
-                              'Login',
-                              style: TextStyle(
-                                  fontSize: AppDimensions.font16,
-                                  fontWeight: FontWeight.w500),
-                            )),
-                      )
-                    ],
-                  )),
-              SizedBox(
-                height: AppDimensions.height20,
-              ),
-              RichText(
-                  text: TextSpan(children: [
-                const TextSpan(
-                  text: 'Don\' have an account?',
-                  style: TextStyle(
-                      color: AppColors.greyTextColor,
-                      fontWeight: FontWeight.w500),
-                ),
-                TextSpan(
-                    text: ' Sign up',
-                    style: TextStyle(
-                        fontSize: AppDimensions.font16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.blueColorAsset),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => Get.to(const SignUpPage())),
-              ]))
-            ],
+            ),
           ),
         ),
       ),

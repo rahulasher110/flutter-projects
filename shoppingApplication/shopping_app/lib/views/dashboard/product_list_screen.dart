@@ -64,7 +64,7 @@ class _ListOfProductsState extends State<ListOfProducts> {
       Get.snackbar(
         'Something went wrong. Please try after some time! \nstatusCode: ${response.statusCode}',
         "",
-        snackPosition: SnackPosition.TOP,
+        snackPosition: SnackPosition.BOTTOM,
       );
     }
     setState(() {
@@ -107,6 +107,7 @@ class _ListOfProductsState extends State<ListOfProducts> {
                     style: const TextStyle(
                       color: Colors.white,
                     ),
+                    cursorColor: AppColors.whiteColor,
                     decoration: InputDecoration(
                         prefixIcon: GestureDetector(
                             onTap: () {
@@ -121,14 +122,14 @@ class _ListOfProductsState extends State<ListOfProducts> {
                                   Get.snackbar(
                                     'Type correct category',
                                     "",
-                                    snackPosition: SnackPosition.TOP,
+                                    snackPosition: SnackPosition.BOTTOM,
                                   );
                                 }
                               } else {
                                 Get.snackbar(
                                   'Please enter something',
                                   "",
-                                  snackPosition: SnackPosition.TOP,
+                                  snackPosition: SnackPosition.BOTTOM,
                                 );
                               }
                             },
@@ -186,195 +187,136 @@ class _ListOfProductsState extends State<ListOfProducts> {
           )
         ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppDimensions.horizontalPadding),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Our Products',
-                  style: TextStyle(
-                      fontSize: AppDimensions.font32,
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: AppDimensions.height20,
-                ),
-                Wrap(
-                  spacing: AppDimensions.width10,
-                  children: listOfCategory.map((e) {
-                    return FilterChip(
-                      label: Text(
-                        e,
-                      ),
-                      elevation: 1,
-                      selectedColor: Colors.blue,
-                      selected: _filters.contains(e),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6)),
-                      onSelected: (bool value) {
-                        setState(() {
-                          if (value) {
-                            if (!_filters.contains(e)) {
-                              _filters.add(e);
-                              addToFilters(e);
-                            }
-                          } else {
-                            _filters.removeWhere((element) => element == e);
-                            removeFilters(e);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-                SizedBox(
-                  height: AppDimensions.height30,
-                ),
-                isLoading
-                    ? const ListOfProductShimmerWidget()
-                    : LazyLoadScrollView(
-                        onEndOfPage: () {},
-                        child: GridView.builder(
-                          controller: scrollController,
-                          shrinkWrap: true,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            childAspectRatio: (1 / 1.8),
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 20,
-                            crossAxisCount: 2,
-                          ),
-                          itemCount: _filters.isEmpty
-                              ? listOfProducts.length
-                              : _displayFilters.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return _filters.isEmpty
-                                ? GestureDetector(
-                                    onTap: () => Get.to(ProductDescription(
-                                      itemDescription: listOfProducts[index],
-                                    )),
-                                    child: ProductWidget(
-                                      title: listOfProducts[index].title,
-                                      price: listOfProducts[index].price,
-                                      image: listOfProducts[index].image,
-                                      rating: listOfProducts[index].rating.rate,
-                                      category: listOfProducts[index].category,
-                                      isLiked: (v) {
-                                        setState(() {
-                                          if (v) {
-                                            final data = ProductsModels(
-                                                id: listOfProducts[index].id,
-                                                title:
-                                                    listOfProducts[index].title,
-                                                price:
-                                                    listOfProducts[index].price,
-                                                image:
-                                                    listOfProducts[index].image,
-                                                category: listOfProducts[index]
-                                                    .category,
-                                                description:
-                                                    listOfProducts[index]
-                                                        .description,
-                                                quantity: 1);
-                                            box.add(data);
-                                            data.save();
-                                          } else {
-                                            var data = box.values
-                                                .toList()
-                                                .cast<ProductsModels>();
-                                            int getIdOfUnLikedItem =
-                                                listOfProducts[index].id;
-                                            int getIndexOfItemInBox = 0;
-                                            int indexOfItem = 0;
-                                            if (data.isNotEmpty) {
-                                              for (var item in data) {
-                                                if (item.id ==
-                                                    getIdOfUnLikedItem) {
-                                                  getIdOfUnLikedItem = item.id!;
-                                                  getIndexOfItemInBox =
-                                                      indexOfItem;
-                                                }
-                                                indexOfItem++;
-                                              }
-                                              deleteData(
-                                                  data[getIndexOfItemInBox]);
-                                            }
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  )
-                                : GestureDetector(
-                                    onTap: () => Get.to(ProductDescription(
-                                      itemDescription: _displayFilters[index],
-                                    )),
-                                    child: ProductWidget(
-                                      title: _displayFilters[index]
-                                          .title
-                                          .toString(),
-                                      price: _displayFilters[index]
-                                          .price!
-                                          .toDouble(),
-                                      image: _displayFilters[index]
-                                          .image
-                                          .toString(),
-                                      rating: _displayFilters[index]
-                                          .rating!
-                                          .rate!
-                                          .toDouble(),
-                                      category: _displayFilters[index]
-                                          .category
-                                          .toString(),
-                                      isLiked: (v) {
-                                        setState(() {
-                                          if (v) {
-                                            final data = ProductsModels(
-                                                id: listOfProducts[index].id,
-                                                title:
-                                                    listOfProducts[index].title,
-                                                price:
-                                                    listOfProducts[index].price,
-                                                image:
-                                                    listOfProducts[index].image,
-                                                category: listOfProducts[index]
-                                                    .category,
-                                                description:
-                                                    listOfProducts[index]
-                                                        .description,
-                                                quantity: 1);
-                                            box.add(data);
-                                            data.save();
-                                          } else {
-                                            var data = box.values
-                                                .toList()
-                                                .cast<ProductsModels>();
-                                            int getIdOfUnLikedItem =
-                                                listOfProducts[index].id;
-                                            int getIndexOfItemInBox = 0;
-                                            int indexOfItem = 0;
-                                            for (var item in data) {
-                                              if (item.id ==
-                                                  getIdOfUnLikedItem) {
-                                                getIdOfUnLikedItem = item.id!;
-                                                getIndexOfItemInBox =
-                                                    indexOfItem;
-                                              }
-                                              indexOfItem++;
-                                            }
-                                            deleteData(
-                                                data[getIndexOfItemInBox]);
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  );
-                          },
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppDimensions.horizontalPadding),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Our Products',
+                    style: TextStyle(
+                        fontSize: AppDimensions.font32,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: AppDimensions.height20,
+                  ),
+                  Wrap(
+                    spacing: AppDimensions.width10,
+                    children: listOfCategory.map((e) {
+                      return FilterChip(
+                        label: Text(
+                          e,
                         ),
-                      ),
-              ],
+                        elevation: 1,
+                        selectedColor: Colors.blue,
+                        selected: _filters.contains(e),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6)),
+                        onSelected: (bool value) {
+                          setState(() {
+                            if (value) {
+                              if (!_filters.contains(e)) {
+                                _filters.add(e);
+                                addToFilters(e);
+                              }
+                            } else {
+                              _filters.removeWhere((element) => element == e);
+                              removeFilters(e);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(
+                    height: AppDimensions.height30,
+                  ),
+                  isLoading
+                      ? const ListOfProductShimmerWidget()
+                      : LazyLoadScrollView(
+                          onEndOfPage: () {},
+                          child: GridView.builder(
+                            controller: scrollController,
+                            shrinkWrap: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              childAspectRatio: (1 / 1.8),
+                              crossAxisSpacing: 20,
+                              mainAxisSpacing: 20,
+                              crossAxisCount: 2,
+                            ),
+                            itemCount: _filters.isEmpty
+                                ? listOfProducts.length
+                                : _displayFilters.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return _filters.isEmpty
+                                  ? GestureDetector(
+                                      onTap: () => Get.to(ProductDescription(
+                                        itemDescription: listOfProducts[index],
+                                      )),
+                                      child: ProductWidget(
+                                        title: listOfProducts[index].title,
+                                        price: listOfProducts[index].price,
+                                        image: listOfProducts[index].image,
+                                        rating:
+                                            listOfProducts[index].rating.rate,
+                                        category:
+                                            listOfProducts[index].category,
+                                        isLiked: (v) {
+                                          setState(() {
+                                            if (v) {
+                                              likedData(index);
+                                            } else {
+                                              unLikedData(index);
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    )
+                                  : GestureDetector(
+                                      onTap: () => Get.to(ProductDescription(
+                                        itemDescription: _displayFilters[index],
+                                      )),
+                                      child: ProductWidget(
+                                        title: _displayFilters[index]
+                                            .title
+                                            .toString(),
+                                        price: _displayFilters[index]
+                                            .price!
+                                            .toDouble(),
+                                        image: _displayFilters[index]
+                                            .image
+                                            .toString(),
+                                        rating: _displayFilters[index]
+                                            .rating!
+                                            .rate!
+                                            .toDouble(),
+                                        category: _displayFilters[index]
+                                            .category
+                                            .toString(),
+                                        isLiked: (v) {
+                                          setState(() {
+                                            if (v) {
+                                              likedData(index);
+                                            } else {
+                                              unLikedData(index);
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    );
+                            },
+                          ),
+                        ),
+                ],
+              ),
             ),
           ),
         ),
@@ -384,5 +326,35 @@ class _ListOfProductsState extends State<ListOfProducts> {
 
   void deleteData(ProductsModels products) async {
     await products.delete();
+  }
+
+  void likedData(int index) {
+    final data = ProductsModels(
+        id: listOfProducts[index].id,
+        title: listOfProducts[index].title,
+        price: listOfProducts[index].price,
+        image: listOfProducts[index].image,
+        category: listOfProducts[index].category,
+        description: listOfProducts[index].description,
+        quantity: 1);
+    box.add(data);
+    data.save();
+  }
+
+  void unLikedData(int index) {
+    var data = box.values.toList().cast<ProductsModels>();
+    int getIdOfUnLikedItem = listOfProducts[index].id;
+    int getIndexOfItemInBox = 0;
+    int indexOfItem = 0;
+    if (data.isNotEmpty) {
+      for (var item in data) {
+        if (item.id == getIdOfUnLikedItem) {
+          getIdOfUnLikedItem = item.id!;
+          getIndexOfItemInBox = indexOfItem;
+        }
+        indexOfItem++;
+      }
+      deleteData(data[getIndexOfItemInBox]);
+    }
   }
 }

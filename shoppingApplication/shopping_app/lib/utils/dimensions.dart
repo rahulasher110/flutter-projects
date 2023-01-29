@@ -38,7 +38,7 @@ class AppDimensions {
   static double iconSize24 = screenHeight / 35.17;
   static double iconSize20 = screenHeight / 42.2;
 
-  static double welcomePageContainerHeight = screenHeight / 2.81;
+  static double welcomePageContainerHeight = screenHeight / 2.1;
 
   static const horizontalPadding = 20.0;
   static EdgeInsets pagePadding =
