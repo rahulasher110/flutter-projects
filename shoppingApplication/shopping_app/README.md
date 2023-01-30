@@ -1,5 +1,9 @@
 Shopping Application
 
+## Hive database is used to store the cart data
+## firebase is used for authentication
+## stripe payemnt is used for the payment
+
 -   login screen
     -   Use firebase auth with email and password
 -   Signup page
@@ -23,3 +27,5 @@ Shopping Application
             should navigate to the cart screen.
         -   The screen should have all the items added to the cart and
             the option to remove items from the cart.
+            
+           
