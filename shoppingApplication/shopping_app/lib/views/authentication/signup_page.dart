@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -154,7 +155,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       horizontal: AppDimensions.width20,
                                       vertical: 16),
                                 ),
-                                onPressed: () => Get.to(const LoginPage()),
+                                onPressed: signup,
                                 child: const Text('Sign up')),
                           )
                         ],
@@ -188,25 +189,25 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  // Future signup() async {
-  //   final isValid = _formKey.currentState!.validate();
-  //   if (!isValid) return;
+  Future signup() async {
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) return;
 
-  //   try {
-  //     await FirebaseAuth.instance.createUserWithEmailAndPassword(
-  //         email: emailController.text.trim(),
-  //         password: passwordController.text.trim());
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
 
-  //     emailController.clear();
-  //     passwordController.clear();
-  //     Get.to(const LoginPage());
-  //   } on FirebaseAuthException catch (e) {
-  //     Get.snackbar(
-  //       e.message.toString(),
-  //       "",
-  //       icon: const Icon(Icons.person, color: Colors.blue),
-  //       snackPosition: SnackPosition.BOTTOM,
-  //     );
-  //   }
-  // }
+      emailController.clear();
+      passwordController.clear();
+      Get.to(const LoginPage());
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar(
+        e.message.toString(),
+        "",
+        icon: const Icon(Icons.person, color: Colors.blue),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
 }

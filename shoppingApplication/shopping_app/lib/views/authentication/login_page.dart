@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -122,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                                       horizontal: AppDimensions.width20,
                                       vertical: 16),
                                 ),
-                                onPressed: () => Get.to(const ListOfProducts()),
+                                onPressed: signIn,
                                 child: Text(
                                   'Login with firebase',
                                   style: TextStyle(
@@ -191,23 +192,23 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Future signIn() async {
-  //   try {
-  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-  //         email: emailController.text.trim(),
-  //         password: passwordController.text.trim());
-  //     emailController.clear();
-  //     passwordController.clear();
-  //     Get.to(const ListOfProducts());
-  //   } on FirebaseAuthException catch (e) {
-  //     Get.snackbar(
-  //       e.message.toString(),
-  //       "",
-  //       icon: const Icon(Icons.person, color: Colors.blue),
-  //       snackPosition: SnackPosition.BOTTOM,
-  //     );
-  //   }
-  // }
+  Future signIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
+      emailController.clear();
+      passwordController.clear();
+      Get.to(const ListOfProducts());
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar(
+        e.message.toString(),
+        "",
+        icon: const Icon(Icons.person, color: Colors.blue),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
 
   Future loginWithFakeStoreApi() async {
     try {
